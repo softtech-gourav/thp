@@ -1,3 +1,7 @@
-git branch: branch,
-    credentialsId: 'github',   // make sure this matches the ID in Jenkins
-    url: "https://github.com/softtech-gourav/${repoName}.git"
+import org.groovenexus.GitUtils
+
+def call(String repoName, String branch = 'main') {
+    def gitUtils = new GitUtils(this)
+    def repoUrl = "https://github.com/softtech-gourav/${repoName}.git"
+    gitUtils.cloneFromGit(repoUrl, branch)
+}
