@@ -9,6 +9,7 @@ class GitUtils implements Serializable {
 
     def cloneFromBitbucket(String projectName, String branch = 'main') {
         def repoUrl = "https://digvijaynath@bitbucket.org/thppython/${projectName}.git"
-        steps.git branch: branch, url: repoUrl
+        // steps.git branch: branch, url: repoUrl
+        steps.git branch: branch, credentialsId: 'github', url: repoUrl
     }
 }
