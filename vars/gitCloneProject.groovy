@@ -1,5 +1,3 @@
-def call(String repoName, String branch = 'main') {
-    git branch: branch,
-        credentialsId: 'github',  // Use your Jenkins Git credentials ID here
-        url: "https://github.com/softtech-gourav/${repoName}.git"
-}
+git branch: branch,
+    credentialsId: 'github',   // make sure this matches the ID in Jenkins
+    url: "https://github.com/softtech-gourav/${repoName}.git"
