@@ -1,5 +1,8 @@
-// vars/gitCloneProject.groovy
 def call(String projectName, String branch = 'main') {
     def gitUtils = new org.groovenexus.GitUtils(steps)
-    gitUtils.cloneFromGit(projectName, branch)
+    try {
+        gitUtils.cloneFromGit(projectName, branch)
+    } catch (Exception e) {
+        steps.error "Git Clone failed: ${e.message}"
+    }
 }
