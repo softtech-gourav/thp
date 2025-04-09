@@ -3,7 +3,7 @@ package org.groovenexus
 
 class GitUtils implements Serializable {
     def steps
-    String bitbucketBaseUrl = "https://digvijaynath@bitbucket.org/thppython/"
+    String bitbucketBaseUrl = "https://bitbucket.org/thppython/"
 
     GitUtils(steps) {
         this.steps = steps
@@ -11,6 +11,10 @@ class GitUtils implements Serializable {
 
     def cloneFromGit(String projectName, String branch = 'main') {
         String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
-        steps.git branch: branch, credentialsId: 'bitbucket-credentials', url: repoUrl
+        steps.git(
+            branch: branch, 
+            credentialsId: 'github',  // Using your existing credential ID
+            url: repoUrl
+        )
     }
 }
