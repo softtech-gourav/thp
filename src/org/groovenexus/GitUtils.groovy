@@ -12,6 +12,7 @@ class GitUtils implements Serializable {
         if (!projectName) {
             throw new IllegalArgumentException("Project name cannot be empty")
         }
+        // Construct the correct repository URL
         String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
         steps.echo "Cloning from: ${repoUrl}" // For debugging
 
@@ -26,3 +27,4 @@ class GitUtils implements Serializable {
         }
     }
 }
+
