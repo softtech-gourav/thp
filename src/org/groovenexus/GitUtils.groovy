@@ -1,4 +1,3 @@
-// src/org/groovenexus/GitUtils.groovy
 package org.groovenexus
 
 class GitUtils implements Serializable {
@@ -10,12 +9,20 @@ class GitUtils implements Serializable {
     }
 
     def cloneFromGit(String projectName, String branch = 'main') {
+        if (!projectName) {
+            throw new IllegalArgumentException("Project name cannot be empty")
+        }
         String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
-        steps.echo "Cloning from: ${repoUrl}" // Add this for debugging
-        steps.git(
-            branch: branch, 
-            credentialsId: 'github', 
-            url: repoUrl
-        )
+        steps.echo "Cloning from: ${repoUrl}" // For debugging
+
+        try {
+            steps.git(
+                branch: branch, 
+                credentialsId: 'github', 
+                url: repoUrl
+            )
+        } catch (Exception e) {
+            steps.error "Failed to clone repository: ${e.message}"
+        }
     }
 }
