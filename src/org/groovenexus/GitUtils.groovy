@@ -11,9 +11,10 @@ class GitUtils implements Serializable {
 
     def cloneFromGit(String projectName, String branch = 'main') {
         String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
+        steps.echo "Cloning from: ${repoUrl}" // Add this for debugging
         steps.git(
             branch: branch, 
-            credentialsId: 'github',  // Using your existing credential ID
+            credentialsId: 'github', 
             url: repoUrl
         )
     }
