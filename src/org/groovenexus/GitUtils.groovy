@@ -10,12 +10,21 @@ class GitUtils implements Serializable {
     }
 
     def cloneFromGit(String projectName, String branch = 'main') {
+        if (!projectName) {
+            throw new IllegalArgumentException("Project name cannot be empty")
+        }
+
         String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
-        steps.echo "Cloning from: ${repoUrl}" // Add this for debugging
-        steps.git(
-            branch: branch, 
-            credentialsId: 'bitbucket-credentials', 
-            url: repoUrl
-        )
+        steps.echo "Cloning from: ${repoUrl}" // Debugging line
+
+        try {
+            steps.git(
+                branch: branch, 
+                credentialsId: 'bitbucket-credentials', 
+                url: repoUrl
+            )
+        } catch (Exception e) {
+            steps.error "Failed to clone repository: ${e.message}"
+        }
     }
 }
