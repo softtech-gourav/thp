@@ -19,7 +19,7 @@ class GitUtils implements Serializable {
         try {
             steps.git(
                 branch: branch, 
-                credentialsId: 'github', 
+                credentialsId: 'bitbucket-credentials', 
                 url: repoUrl
             )
         } catch (Exception e) {
