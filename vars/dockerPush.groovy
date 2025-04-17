@@ -1,25 +1,22 @@
 // vars/dockerPush.groovy
 
-// Docker login
+// Docker login function
 def call(dockerImage) {
-    // Access environment variables
     def dockerRegistry = env.DOCKER_REGISTRY
     def dockerRepo = env.DOCKER_REPO
     def credentialsId = env.HARBOR_CREDENTIALS_ID
 
-    // Ensure required environment variables are set
     if (!dockerRegistry || !dockerRepo || !credentialsId) {
-        error "Required environment variables (DOCKER_REGISTRY, DOCKER_REPO, HARBOR_CREDENTIALS_ID) are not set."
+        error "Required environment variables are not set."
     }
 
-    // Perform Docker push within the registry context
-    docker.withRegistry("http://${dockerRegistry}", credentialsId) {
-        dockerImage.push()  // Push the image to the repository
-        dockerImage.push("${env.BUILD_ID}")  // Tag the image with the build ID and push again
+    docker.withRegistry("https://${dockerRegistry}", credentialsId) {
+        dockerImage.push()
+        dockerImage.push("${env.BUILD_ID}")
     }
 }
 
-// Run docker container
+// Run Docker Container
 def runDockerContainer(CONTAINER_NAME, PORT_MAPPING, FULL_IMAGE_NAME) {
     return {
         script {
@@ -34,15 +31,14 @@ def runDockerContainer(CONTAINER_NAME, PORT_MAPPING, FULL_IMAGE_NAME) {
     }
 }
 
-// Cleanup docker resources
+// Cleanup Docker Resources
 def cleanupDockerResources(CONTAINER_NAME, DOCKER_REGISTRY, DOCKER_IMAGE, FULL_IMAGE_NAME) {
     return {
         script {
-            // Stop and remove existing container
             sh(script: "docker stop ${CONTAINER_NAME} || true", returnStatus: true)
             sh(script: "docker rm ${CONTAINER_NAME} || true", returnStatus: true)
-
-            // Clean up using registry-prefixed image name
+            
+            // Clean up the previous image tags
             sh """
                 LAST_TAG=\$(docker images --filter=reference="${DOCKER_REGISTRY}/${DOCKER_IMAGE}:*" \\
                     --format '{{.Tag}}' | sort -r | head -n 1)
