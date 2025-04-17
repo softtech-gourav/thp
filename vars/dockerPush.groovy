@@ -16,19 +16,6 @@ def call(dockerImage) {
     }
 }
 
-// Run Docker Container
-def runDockerContainer(CONTAINER_NAME, PORT_MAPPING, FULL_IMAGE_NAME) {
-    return {
-        script {
-            sh """
-            docker run --restart unless-stopped \\
-                --name ${CONTAINER_NAME} \\
-                -d \\
-                -p ${PORT_MAPPING} \\
-                ${FULL_IMAGE_NAME}
-            """
-        }
-    }
-}
+
 
 
