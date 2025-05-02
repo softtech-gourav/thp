@@ -1,24 +1,13 @@
-def cloneFromGit(String projectName, String branch = 'main') {
-    if (!projectName) {
-        throw new IllegalArgumentException("Project name cannot be empty")
-    }
+// vars/gitCloneProject.groovy
 
-    String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
-    steps.echo "Cloning from: ${repoUrl}"
+def call(String projectName, String branchName) {
+    echo "Cloning project: ${projectName} from branch: ${branchName}"
 
-    try {
-        steps.checkout([
-            $class: 'GitSCM',
-            branches: [[name: "*/${branch}"]],
-            userRemoteConfigs: [[
-                url: repoUrl,
-                credentialsId: 'bitbucket-credentials'
-            ]],
-            extensions: [
-                [$class: 'CloneOption', noTags: false, shallow: false]
-            ]
-        ])
-    } catch (Exception e) {
-        steps.error "Failed to clone repository: ${e.message}"
-    }
+    // Define the Git repository URL based on the project name
+    def repoUrl = "https://bitbucket.org/groovenexus/${projectName}.git"
+
+    // Perform the clone operation
+    git branch: "${branchName}",
+        credentialsId: 'bitbucket-credentials',
+        url: repoUrl
 }
