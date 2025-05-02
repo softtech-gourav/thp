@@ -1,20 +1,23 @@
-def getLatestGitTag() {
+def cloneFromGit(String projectName, String branch = 'main') {
+    if (!projectName) {
+        throw new IllegalArgumentException("Project name cannot be empty")
+    }
+
+    String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
+    steps.echo "Cloning from: ${repoUrl}"
+
     try {
-        // Make sure tags are fetched
+        steps.git(
+            branch: branch,
+            credentialsId: 'bitbucket-credentials',
+            url: repoUrl,
+            changelog: false,
+            poll: false
+        )
+
+        // 🔁 Fetch all tags after checkout
         steps.sh("git fetch --tags")
-
-        def latestCommit = steps.sh(script: "git rev-list --tags --max-count=1", returnStdout: true).trim()
-
-        if (!latestCommit) {
-            steps.echo "⚠️ No tags found in the repository. Using default version."
-            return "v0.0.1"
-        }
-
-        def latestTag = steps.sh(script: "git describe --tags ${latestCommit}", returnStdout: true).trim()
-        steps.echo "Latest Git Tag: ${latestTag}"
-        return latestTag
     } catch (Exception e) {
-        steps.error "Error fetching latest Git tag: ${e.message}"
-        return 'v0.0.1'
+        steps.error "Failed to clone repository: ${e.message}"
     }
 }
