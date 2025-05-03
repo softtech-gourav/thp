@@ -2,7 +2,7 @@ package org.groovenexus
 
 class GitUtils implements Serializable {
     def steps
-    String bitbucketBaseUrl = "https://bitbucket.org/thp-python/"  // ✅ Corrected base URL
+    String bitbucketBaseUrl = "https://bitbucket.org/thp-python"
 
     GitUtils(steps) {
         this.steps = steps
@@ -23,7 +23,7 @@ class GitUtils implements Serializable {
             throw new IllegalArgumentException("Project name cannot be empty")
         }
 
-        String repoUrl = "${bitbucketBaseUrl}${projectName}.git"  // Builds to: https://bitbucket.org/thp-python/gnadmin-frontend.git
+        String repoUrl = "${bitbucketBaseUrl.replaceAll('/+$', '')}/${projectName}.git"
         steps.echo "Cloning from: ${repoUrl}"
 
         try {
