@@ -2,10 +2,20 @@ package org.groovenexus
 
 class GitUtils implements Serializable {
     def steps
-    String bitbucketBaseUrl = "https://bitbucket.org/thppython/"
+    String bitbucketBaseUrl = "https://bitbucket.org/thp-python/Groovenexus/"
 
     GitUtils(steps) {
         this.steps = steps
+    }
+
+    def getLatestGitTag() {
+        try {
+            def result = steps.sh(script: 'git fetch --tags && git describe --tags `git rev-list --tags --max-count=1`', returnStdout: true).trim()
+            return result ?: 'v1.0.0'
+        } catch (Exception e) {
+            steps.echo "Failed to get latest Git tag: ${e.message}"
+            return 'v1.0.0'
+        }
     }
 
     def cloneFromGit(String projectName, String branch = 'main') {
@@ -25,30 +35,5 @@ class GitUtils implements Serializable {
         } catch (Exception e) {
             steps.error "Failed to clone repository: ${e.message}"
         }
-    }
-
-    /**
-     * Fetch latest Git tag from repo.
-     * Returns: String (e.g., "v1.0.3") or "v0.0.0" if no tags found.
-     */
-    def getLatestGitTag() {
-        steps.sh "git fetch --tags"
-
-        def latestCommit = steps.sh(
-            script: "git rev-list --tags --max-count=1",
-            returnStdout: true
-        ).trim()
-
-        if (!latestCommit) {
-            steps.echo "No tags found. Defaulting to v0.0.0"
-            return "v0.0.0"
-        }
-
-        def tag = steps.sh(
-            script: "git describe --tags ${latestCommit}",
-            returnStdout: true
-        ).trim()
-
-        return tag
     }
 }
