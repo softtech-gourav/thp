@@ -1,8 +1,9 @@
+// src/org/groovenexus/GitUtils.groovy
 package org.groovenexus
 
 class GitUtils implements Serializable {
     def steps
-    String bitbucketBaseUrl = "https://bitbucket.org/thppython/"  // ✅ Make sure this matches your actual repo path
+    String bitbucketBaseUrl = "https://bitbucket.org/thp-python/"
 
     GitUtils(steps) {
         this.steps = steps
@@ -14,7 +15,7 @@ class GitUtils implements Serializable {
         }
 
         String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
-        steps.echo "Cloning from: ${repoUrl}"
+        steps.echo "📥 Cloning from: ${repoUrl}"
 
         try {
             steps.git(
@@ -22,21 +23,27 @@ class GitUtils implements Serializable {
                 credentialsId: 'bitbucket-credentials',
                 url: repoUrl
             )
+            steps.sh 'git fetch --tags' // ✅ Ensure tags are fetched
         } catch (Exception e) {
-            steps.error "Failed to clone repository: ${e.message}"
+            steps.error "❌ Failed to clone repository: ${e.message}"
         }
     }
 
     def getLatestGitTag() {
         try {
-            def result = steps.sh(
-                script: 'git fetch --tags && git describe --tags `git rev-list --tags --max-count=1`',
-                returnStdout: true
-            ).trim()
-            return result ?: 'v1.0.0'
+            def latestCommit = steps.sh(script: "git rev-list --tags --max-count=1", returnStdout: true).trim()
+
+            if (!latestCommit) {
+                steps.echo "⚠️ No tags found. Using fallback version."
+                return "v0.0.1"
+            }
+
+            def tag = steps.sh(script: "git describe --tags ${latestCommit}", returnStdout: true).trim()
+            steps.echo "✅ Latest Git tag is: ${tag}"
+            return tag
         } catch (Exception e) {
-            steps.echo "Failed to get latest Git tag: ${e.message}"
-            return 'v1.0.0'
+            steps.echo "❌ Failed to get latest Git tag: ${e.message}"
+            return "v0.0.1"
         }
     }
 }
