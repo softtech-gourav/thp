@@ -1,23 +1,30 @@
-def cloneFromGit(String projectName, String branch = 'main') {
-    if (!projectName) {
-        throw new IllegalArgumentException("Project name cannot be empty")
+// src/org/groovenexus/GitUtils.groovy
+package org.groovenexus
+
+class GitUtils implements Serializable {
+    def steps
+    String bitbucketBaseUrl = "https://bitbucket.org/thppython/"
+
+    GitUtils(steps) {
+        this.steps = steps
     }
 
-    String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
-    steps.echo "Cloning from: ${repoUrl}"
+    def cloneFromGit(String projectName, String branch = 'main') {
+        if (!projectName) {
+            throw new IllegalArgumentException("Project name cannot be empty")
+        }
 
-    try {
-        steps.git(
-            branch: branch,
-            credentialsId: 'bitbucket-credentials',
-            url: repoUrl,
-            changelog: false,
-            poll: false
-        )
+        String repoUrl = "${bitbucketBaseUrl}${projectName}.git"
+        steps.echo "Cloning from: ${repoUrl}" // Debugging line
 
-        // 🔁 Fetch all tags after checkout
-        steps.sh("git fetch --tags")
-    } catch (Exception e) {
-        steps.error "Failed to clone repository: ${e.message}"
+        try {
+            steps.git(
+                branch: branch, 
+                credentialsId: 'bitbucket-credentials', 
+                url: repoUrl
+            )
+        } catch (Exception e) {
+            steps.error "Failed to clone repository: ${e.message}"
+        }
     }
 }
